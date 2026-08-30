@@ -1,0 +1,13 @@
+# Core NLP packages
+nltk==3.10.3
+spacy==3.8.16
+scikit-learn==1.9.0
+
+# Data processing and visualization
+numpy==2.5.2
+pandas==3.0.5
+matplotlib==3.11.1
+
+# Jupyter notebooks in VS Code
+jupyter==1.1.1
+ipykernel==7.3.0
