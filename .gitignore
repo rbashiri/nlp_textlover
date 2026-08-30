@@ -1,5 +1,7 @@
 # dataset files — kept on external drive, not in git
 data/
+datasets/
+nltk_data/
 *.cif
 *.json
 *.csv
@@ -7,6 +9,7 @@ data/
 
 # local Python environment, different on every machine, often large
 .venv/
+venv/
 __pycache__/
 *.py[cod]
 
@@ -43,3 +46,6 @@ mlartifacts/
 *.pkl
 *.joblib
 *.onnx
+*.pt
+*.pth
+*.safetensors
