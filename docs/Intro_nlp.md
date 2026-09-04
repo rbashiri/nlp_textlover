@@ -161,3 +161,235 @@ Think of the process like this:
 This is another important term from this lesson.
 
 A corpus = collection of texts used for NLP analysis.
+
+### regular expressions: `re`
+Regular expressions (Regex) find text based on a pattern.Instead of searching for one exact word, Regex lets you describe what the text should look like.
+ Regex to find or clean:
+    - numbers
+    - dates
+    - email addresses
+    - punctuation
+    - unwanted symbols
+    - specific character patterns
+
+**re.sub() is especially important for NLP preprocessing.Find a pattern → replace it with something else**
+ ``` python
+ import re
+# pattern
+# substitution — what each pattern match should be substituted with
+# text — the text which the function scans for pattern matches
+re.sub(pattern, substitution, text)
+
+ ```
+ As part of the preprocessing step, we should remove all characters except letters, apostrophes, and spaces, so let's write a regular expression to find them.
+ 
+ raw strings for Regex patterns.*r"..."*
+ The `r` tells Python to treat backslashes literally, which prevents conflicts between Python escape characters and Regex syntax.
+
+ ``` python
+ re.sub(r"pattern", "replacement", text)
+ ```
+
+```text
+Raw review
+    ↓
+Regex cleaning
+    ↓
+Tokenization
+    ↓
+Lemmatization
+    ↓
+Clean text
+    ↓
+Convert text to numerical features
+    ↓
+ML model
+```
+**Summary**
+
+*Regular Expressions (Regex)*: Regex is a pattern-matching tool used to find, extract, replace, or remove parts of text. In NLP, it is commonly used during text preprocessing to remove unwanted characters such as punctuation, numbers, or symbols. Python provides the re module, and re.sub(pattern, replacement, text) can replace all text matching a pattern. Regex patterns are usually written as raw strings (r"...") to avoid problems with Python escape characters.
+
+## Bag of Words — What you should learn
+
+1. Why do we need Bag of Words?
+ A machine-learning model cannot directly work with:
+  "this movie is very good"
+It needs numerical features.
+
+workflow  is now:
+``` text
+Raw text
+    ↓
+Regex cleaning
+    ↓
+Tokenization
+    ↓
+Lemmatization
+    ↓
+Clean text
+    ↓
+Bag of Words
+    ↓
+Numerical features
+    ↓
+ML model
+``` 
+`Main lesson:Bag of Words (BoW) converts text into numerical features by counting how often words appear.`
+
+*Note*: Bag of words doesnot know the order of words it only knows the number of words
+N-grams: Preserving Some Word Order
+N-grams offer a partial solution. Instead of treating each word independently, we consider sequences of consecutive words.
+
+The "N" refers to how many words are in each sequence:
+
+Unigrams (N=1): individual words, same as regular bag of words
+Bigrams (N=2): two-word sequences
+Trigrams (N=3): three-word sequences
+Larger n-grams preserve more context, but they create many more features and usually require more data.
+
+`Summary`
+
+**Bag of Words** is an NLP technique that converts text into numerical features so that machine-learning models can process it.
+
+### How it works
+
+1. Create a **vocabulary** of unique words from the corpus.
+2. Count how many times each vocabulary word appears in each text.
+3. Represent each text as a numerical **vector**.
+4. Combine the vectors into a **matrix** that can be used by an ML model.
+
+```text
+Clean text
+    ↓
+Create vocabulary
+    ↓
+Count word occurrences
+    ↓
+Create numerical vectors
+    ↓
+Feature matrix
+    ↓
+Machine-learning model
+```
+
+### Important Terms
+
+* **Corpus:** Collection of texts/documents.
+* **Vocabulary:** Unique words used as features.
+* **Vector:** Numerical representation of one text.
+* **Matrix:** Numerical representation of the whole corpus.
+* **Unigram:** One-word feature.
+* **Bigram:** Two consecutive words.
+* **Trigram:** Three consecutive words.
+
+### Limitation of Bag of Words
+
+Bag of Words counts words but **does not preserve word order**. Therefore, some information about context and meaning is lost.
+
+### N-grams
+
+N-grams preserve some word order by treating consecutive words as features.
+
+* `N = 1` → Unigram
+* `N = 2` → Bigram
+* `N = 3` → Trigram
+
+Larger n-grams capture more context but also create more features and a sparser feature matrix.
+
+
+# Bag of Words with CountVectorizer
+
+## Purpose
+
+`CountVectorizer()` converts a text corpus into numerical features that a machine-learning model can use.
+
+### Basic Workflow
+
+``` text
+Clean/Lemmatized Corpus
+        ↓
+CountVectorizer()
+        ↓
+fit_transform(corpus)
+        ↓
+Create vocabulary
+        ↓
+Count word occurrences
+        ↓
+Bag-of-Words matrix
+        ↓
+ML features
+```
+
+## Important Code
+
+**Import CountVectorizer**
+``` python
+from sklearn.feature_extraction.text import CountVectorizer
+
+#Create the vectorizer
+count_vect = CountVectorizer()
+
+# Fit and transform the corpus( learn words and convert them)
+
+bow = count_vect.fit_transform(corpus)
+
+## Understanding `fit_transform()
+
+# `fit` → learns the vocabulary from the corpus.
+#`transform` → converts the texts into numerical features.
+# `fit_transform` → performs both operations.
+
+## Shape
+
+bow.shape()
+
+#The output:
+(number of texts, number of vocabulary features)
+
+Example:
+
+(7, 16)
+
+means:
+
+# 7 texts
+# 16 word features
+```
+## Vocabulary
+
+The vocabulary contains the unique words used as features.
+``` python
+count_vect.get_feature_names_out()
+```
+Each vocabulary word represents one column in the Bag-of-Words matrix.
+## N-grams
+`ngram_range` controls how many consecutive words are treated as one feature.
+
+* `(1, 1)` → unigrams only
+* `(2, 2)` → bigrams only
+* `(3, 3)` → trigrams only
+* `(1, 2)` → unigrams and bigrams
+
+Example:
+
+`CountVectorizer(ngram_range=(2, 2))`
+
+## Stop Words
+
+Stop words are common words such as `the`, `a`, `of`, and `for` that may provide little useful information for some NLP tasks.
+
+They can be removed to reduce unnecessary features.
+
+stop_words = set(stopwords.words('english'))
+
+Then:
+
+`CountVectorizer(stop_words=stop_words)`
+
+### Final Concept
+
+**CountVectorizer = Text → Numerical Features**
+
+It learns the vocabulary, counts word or n-gram occurrences, and creates the feature matrix that can be passed to a machine-learning model.
+```
