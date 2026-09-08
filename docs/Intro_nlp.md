@@ -392,4 +392,62 @@ Then:
 **CountVectorizer = Text → Numerical Features**
 
 It learns the vocabulary, counts word or n-gram occurrences, and creates the feature matrix that can be passed to a machine-learning model.
+
+
+### Language Representations
+#### TF_IDF
+The word "the" might appear 50 times in a single review. The word "brilliant" might appear twice. Which word tells you more about whether the reviewer liked the movie?
+
+Obviously "brilliant" matters more. But bag of words would give "the" a value of 50 and "brilliant" a value of 2. The math is backwards. The most frequent words are often the least informative.
+
+TF-IDF captures this intuition mathematically. A word is important to a document when:
+
+It appears frequently in that document (term frequency)
+It appears rarely across other documents (inverse document frequency)
+Words that are common everywhere (like "the") get downweighted. Words that are common in one document but rare overall get boosted. This surfaces the words that make each document distinctive.
+`Term Frequency(TF)`: How Often Does the Word Appear Here?
+``` text
+TF = t / n
 ```
+Where:
+
+t = number of times the word appears in the document
+n = total number of words in the document
+
+`Inverse Document Frequency`(IDF): How Rare Is This Word Overall?
+```text
+IDF = log(D / d)
+```
+Where:
+
+D = total number of documents in the corpus
+d = number of documents containing this word
+
+```text 
+The final score multiplies term frequency by inverse document frequency:
+TF-IDF = TF × IDF
+```
+Limitations of TF-IDF
+TF-IDF improves on raw word counts, but it still has limitations:
+
+No understanding of meaning. "Happy" and "joyful" are treated as completely unrelated words. TF-IDF doesn't know they're synonyms.
+
+No word order. Like bag of words, TF-IDF ignores sequence. "Not good" and "good not" produce identical scores.
+
+Sparse vectors. Most words don't appear in most documents, so TF-IDF vectors are mostly zeros. This can be inefficient for very large vocabularies.
+
+New vocabulary problems. Words that never appeared in your corpus get no representation at all.
+
+Despite these limitations, TF-IDF remains widely used because it's fast, interpretable, and effective. It's often the first approach to try before moving to more complex methods like word embeddings.
+### Calculation of TF-IDF
+ TF-IDF by using the sklearn library. The `TfidfVectorizer()` class can be found in the sklearn. Import it this way:
+ ```python
+ # improt Tfidfvectorizer
+ from sklearn.feature_extraction.text import TfidfVectorizer
+  # step 2: create a counter and define stop words 
+  stop_words = set(stopwords.words('english'))
+count_tf_idf = TfidfVectorizer(stop_words=stop_words)
+# step 3 Call the fit_transform() function to calculate the TF-IDF for the text corpus:
+tf_idf = count_tf_idf.fit_transform(corpus)
+# we can calculate ngram by passing the ngram_range argument to TfidfVectorizer().
+ ```
