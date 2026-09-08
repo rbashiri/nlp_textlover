@@ -395,7 +395,7 @@ It learns the vocabulary, counts word or n-gram occurrences, and creates the fea
 
 
 ### Language Representations
-#### TF_IDF
+#### sparse vectors (TF-IDF) 
 The word "the" might appear 50 times in a single review. The word "brilliant" might appear twice. Which word tells you more about whether the reviewer liked the movie?
 
 Obviously "brilliant" matters more. But bag of words would give "the" a value of 50 and "brilliant" a value of 2. The math is backwards. The most frequent words are often the least informative.
@@ -451,3 +451,52 @@ count_tf_idf = TfidfVectorizer(stop_words=stop_words)
 tf_idf = count_tf_idf.fit_transform(corpus)
 # we can calculate ngram by passing the ngram_range argument to TfidfVectorizer().
  ```
+### Word Embeddings:
+`Word embeddings are a way of turning words into numbers that a computer can work with — but in a way that captures meaning, not just identity.`
+
+- Start with your documents (reviews, sentences, articles — whatever collection of text you're working with).
+- Scan through every single document and collect every unique word used anywhere in the whole collection
+- That collected list of unique words IS the vocabulary
+- Now that you know the vocabulary, you go back and convert each document into a vector, using that vocabulary as the fixed set of columns/slots. 
+
+## From Sparse to Dense
+A dense vector is simply a list of numbers where most or all of the values are non-zero — as opposed to a "sparse vector," where most values are zero.
+
+- TF-IDF produces sparse vectors. If your vocabulary has 50,000 words, each document becomes a vector with 50,000 dimensions, mostly filled with zeros. Only the words that actually appear get non-zero values.
+
+- A sparse vector is a vector (a list of numbers) where most of the values are zero, and only a small number of positions actually have a non-zero value.
+
+- Simple definition
+"Sparse" = mostly empty. Out of all the slots in the vector, only a few are "filled in" with real numbers — the rest are just 0.
+
+-Word embeddings take a different approach. Each word becomes a dense vector with a fixed number of dimensions, typically between 100 and 300. Every dimension has a value. No zeros.
+
+| Representation   | Dimensions | Values                          |
+|------------------|------------|----------------------------------|
+| TF-IDF           | 50,000+    | Mostly zeros, few non-zero      |
+| Word Embedding   | 100–300    | All dimensions have values      |
+
+*pre-trained embeddings*
+- Word2Vec: often 300 from google
+- GloVe: comes in 50, 100, 200, or 300-dimension versions: GloVe (Global - - Vectors for Word Representation)
+- FastText: often 300 : Facebook extends Word2Vec 
+- `BERT` stands for Bidirectional Encoder Representations from Transformers
+**These pre-trained embeddings give you a starting point.**
+
+Meaning Emerges from Context:
+Word embeddings learn from these patterns. By analyzing billions of sentences, the algorithm discovers which words appear in similar contexts and places them near each other in vector space.
+
+-embeddings aren't just placing similar words near each other randomly — they're capturing relationships (gender, tense, geography, comparison) as consistent, reusable directions in space.
+
+-word embeddings is that relationships between words become mathematical operations.
+What is "Corpora"?
+Corpora is just the plural of "corpus"! 📚
+
+1 corpus = a single collection of text documents
+Many corpora = multiple collections of text documents
+
+**Limitations of Word Embeddings**
+Traditional word embeddings have one significant limitation: each word gets exactly one vector, regardless of context.
+Modern approaches like `BERT` and other transformer models address this by creating contextual embeddings, where a word's vector depends on the surrounding sentence. But that's a topic for a later lesson.
+
+#### Word2Vec
