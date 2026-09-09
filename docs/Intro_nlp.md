@@ -499,4 +499,60 @@ Many corpora = multiple collections of text documents
 Traditional word embeddings have one significant limitation: each word gets exactly one vector, regardless of context.
 Modern approaches like `BERT` and other transformer models address this by creating contextual embeddings, where a word's vector depends on the surrounding sentence. But that's a topic for a later lesson.
 
-#### Word2Vec
+#### Word2Vec:
+The core idea is elegantly simple: train a neural network to predict words from their context. The embeddings emerge as a byproduct of this prediction task.
+*The Core Insight: Context Predicts Meaning*
+The context constrains what words make sense.
+Word2Vec exploits this observation.
+
+`Word2Vec comes in two versions that flip the prediction task:`
+
+`CBOW (Continuous Bag of Words)` predicts the center word from surrounding context words. Given "adopted," "fluffy," "from," "shelter," predict that the missing word is "dog."
+
+`Skip-gram` does the opposite. Given the center word, predict the surrounding context. Given "dog," predict that "adopted," "fluffy," "shelter" might appear nearby.
+
+`Hint`:Skip-gram tends to work better for rare words and smaller datasets. CBOW trains faster on large datasets. In practice, skip-gram is more commonly used.
+
+`The Context Window`
+
+Skip-gram looks at words within a window around each target word. The window size determines how many neighbors count as context.
+    - Slide the window one word to the right,
+    
+# Text Classification Pipeline Using Embeddings
+
+1. **Tokenize each document**
+   Split every document into a list of words. A materials abstract like "Efficient photocatalyst for solar hydrogen production" becomes a token list. Apply the same tokenization to every document in your dataset.
+
+2. **Look up word embeddings**
+   For each token, retrieve its vector from a pre-trained embedding set (Word2Vec, GloVe) or one you've trained yourself. Words with similar meaning end up with similar vectors, even if they never appeared together in your own dataset.
+
+3. **Collapse words into one document vector**
+   Average all the word vectors in a document to get a single fixed-length vector. For better results, weight the average by TF-IDF (or drop stopwords first) so distinctive terms like "photocatalyst" or "electrolyte" count more than "the" or "a".
+
+4. **Feed document vectors into a classifier**
+   Once every document is a fixed-length vector with a label, it's an ordinary supervised learning problem. Logistic regression or gradient boosting both work well as a first pass.
+
+5. **Handle out-of-vocabulary words**
+   Decide upfront what happens when a word isn't in your embedding vocabulary — skip it, substitute an "unknown" vector, or use FastText, which builds vectors for unseen words from subword pieces (useful for chemical naming variants).
+
+6. **Evaluate against a simpler baseline**
+   Compare your embedding-based classifier against plain TF-IDF. Embeddings tend to win when your labeled data is limited or test documents use different wording than training documents; TF-IDF tends to win when you have abundant data and exact keywords matter.
+
+   ```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        MACHINE LEARNING PIPELINE                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   1. RAW TEXT          2. PREPROCESSING        3. FEATURE EXTRACTION       │
+│   ─────────────        ───────────────         ──────────────────────      │
+│   "The quick brown     "quick brown fox"       [0.2, 0.0, 0.8, ...]        │
+│    fox jumps..."       (cleaned tokens)        (numbers!)                  │
+│                                                                             │
+│                                                                             │
+│   4. TRAIN MODEL       5. MAKE PREDICTIONS     6. EVALUATE                 │
+│   ──────────────       ──────────────────      ────────────                │
+│   Learn patterns       New text → Category     How accurate?               │
+│   from examples                                                            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
